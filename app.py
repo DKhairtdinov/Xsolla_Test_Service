@@ -4,8 +4,6 @@ import numpy as np
 import pandas as pd
 import pickle
 
-
-
 from flask import Flask
 from flask import request
 import requests
@@ -18,50 +16,52 @@ import traceback
 
 application = Flask(__name__)
 
-
-#загружаем модели из файла
+# загружаем модели из файла
 vec = pickle.load(open("./models/tfidf.pickle", "rb"))
 model = lgb.Booster(model_file='./models/lgbm_model.txt')
 
 
 # тестовый вывод
-@application.route("/")  
+@application.route("/")
 def hello():
-    resp = {'message':"Hello World!"}
-    
+    resp = {'message': "Hello World!"}
+
     response = jsonify(resp)
-    
+
     return response
 
+
 # предикт категории
-@application.route("/categoryPrediction" , methods=['GET', 'POST'])  
+@application.route("/categoryPrediction", methods=['GET', 'POST'])
 def registration():
-    resp = {'message':'ok'
-           ,'category': -1
-           }
+    resp = {'message': 'ok'
+        , 'category': -1
+            }
 
     try:
         getData = request.get_data()
-        json_params = json.loads(getData) 
-        
-        #напишите прогноз и верните его в ответе в параметре 'prediction'
+        json_params = json.loads(getData)
+
+        # напишите прогноз и верните его в ответе в параметре 'prediction'
+        message = json_params['user_message']
+        print(message)
+
+        result = model.predict(vec.transform([message]).toarray())
+
+        resp['prediction'] = result.tolist()
+        print(resp)
 
 
 
-        
-    except Exception as e: 
+    except Exception as e:
         print(e)
         resp['message'] = e
-      
+
     response = jsonify(resp)
-    
+
     return response
 
-        
 
 if __name__ == "__main__":
     port = int(os.getenv('PORT', 5000))
-    application.run(debug=False, port=port, host='0.0.0.0' , threaded=True)
-
-
-
+    application.run(debug=False, port=port, host='0.0.0.0', threaded=True)

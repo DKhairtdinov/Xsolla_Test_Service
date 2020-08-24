@@ -47,12 +47,11 @@ def registration():
 
         result = model.predict(vec.transform([message]).toarray())
 
-        #resp['prediction'] = result.tolist()  
-        pred = result.tolist()
+        resp['prediction'] = result.tolist()  
+        
         resp['message'] = str(message)        
-        resp['category'] = pred.argmax()
-
-
+      
+    
     except Exception as e:
         print(e)
         resp['message'] = e

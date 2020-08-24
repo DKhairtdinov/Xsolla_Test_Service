@@ -48,7 +48,7 @@ def registration():
         result = model.predict(vec.transform([message]).toarray())
 
         resp['prediction'] = result.tolist()        
-        #resp['message'] = message        
+        resp['message'] = str(message)        
         #resp['category'] = result.tolist().argmax()
 
 
